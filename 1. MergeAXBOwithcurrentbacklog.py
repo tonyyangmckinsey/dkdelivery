@@ -102,6 +102,7 @@ final = newmerged.merge(
     how="left"
 )
 
+print ("satan")
 print("✅ Rows in final after merging with df:", len(final))
 
 # ✅ Filter for desired Project Stage values before exporting. LOOK AT THIS
