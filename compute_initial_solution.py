@@ -54,6 +54,9 @@ def compute_initial_solution():
 
         print(f"✅ {filled_count} rows updated for {date_str}")
 
+
+
+    
     # === Save the updated file ===
     master_df.to_excel(output_file_path, index=False)
     print(f"📤 Final populated file saved to: {output_file_path}")

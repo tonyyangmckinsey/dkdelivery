@@ -1,6 +1,6 @@
 from compute_initial_unique_crids import compute_unique_crids
 from compute_initial_solution import compute_initial_solution
-from add_new_orders import add_new_orders
+from add_initial_new_orders import add_new_orders
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     #compute_initial_solution()
 
     print("3. Add new orders from initial snapshot (No more use)")
-    add_new_orders()
+    add_initial_new_orders()
 
 
 

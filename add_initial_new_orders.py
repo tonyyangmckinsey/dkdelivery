@@ -5,7 +5,7 @@ from datetime import datetime
 today_str = datetime.today().strftime("%Y%m%d")  # Format: YYYYMMDD
 snapshot_date_str = "20250521"  # <-- snapshot date to process
 
-def add_new_orders():
+def add_initial_new_orders():
     # === Setup paths ===
     base_path = r"C:\Users\Tony Yang\OneDrive - McKinsey & Company\Documents\Python"
     snapshot_path = os.path.join(base_path, "3. DKTrackerSnapshots", f"{snapshot_date_str}_DK_backlog_snapshot.xlsx")
