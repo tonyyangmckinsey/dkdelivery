@@ -4,7 +4,7 @@ today_str = datetime.today().strftime("%Y%m%d")  # Format: YYYYMMDD
 
 # === Load the final output (master) and the DK backlog tracker (new data) ===
 final_output_path = rf"C:\Users\Tony Yang\OneDrive - McKinsey & Company\Documents\Python\2. Output\{today_str}_1. Final__latest_backlog_output (remember to update the first columns).xlsx"
-tracker_path = r"C:\Users\Tony Yang\OneDrive - McKinsey & Company\Documents\Python\1. Input\DK backlog tracker.xlsx"
+tracker_path = rf"C:\Users\Tony Yang\OneDrive - McKinsey & Company\Documents\Python\3. DKTrackerSnapshots\{today_str}_DK_backlog_snapshot.xlsx"
 
 final_df = pd.read_excel(final_output_path)
 tracker_df = pd.read_excel(tracker_path)
