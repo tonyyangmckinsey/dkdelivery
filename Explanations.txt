@@ -1,0 +1,125 @@
+1. metric_avg_days_in_step
+
+It's calculating, per delivery step, the average number of consecutive days an order spends in that step before transitioning to a new one.
+It loops through each row (i.e., each order), looks across all the daily columns, and counts how long an order stays in the same step, like this:
+
+Cabling  → Cabling → Cabling → Activation → Activation → RFS
+           ↑      ↑      ↑        ↑         ↑         ↑
+         Day 1   2      3       4         5         6
+
+
+In this case:
+Cabling = 3 days
+Activation = 2 days
+RFS = 1 day
+
+These durations are added to totals per step
+
+Another example:
+If 50 orders each spend 3 days in a step → average is 3
+If 10 orders spend 1 day, 10 spend 5 → average = (10×1 + 10×5) / 20 = 3
+
+Order	Timeline
+001	Planning → Planning → Digging
+002	Planning → Planning → Planning
+003	Planning → Digging → Digging
+
+For Planning:
+Order 1: 2 days
+Order 2: 3 days
+Order 3: 1 day
+→ Total: 6 days, 3 entries → Average: 2.0 for Planning
+
+2. metric_orders_unique
+For each delivery step, how many unique orders (based on ServiceID_Crid + SalesProjectID_ContractNumber) ever passed through that step
+
+Let’s say:
+
+Order ID	Step Sequence
+A	Planning → Planning → Digging
+B	Planning → Planning
+C	Digging → Digging → Activation
+
+Result:
+
+Step	Orders Passed Through
+Planning	A, B
+Digging	A, C
+Activation	C
+
+Even though B stayed 2 days in Planning, it’s only counted once.
+C is counted in both Digging and Activation.
+So Planning would be 2, Digging would be 2 and Activation would be 1
+
+
+3. metric_avg_orders_per_day
+For each delivery step, on average, how many orders are in that step per day over the period 
+
+uppose you have:
+
+Order	20250521	20250522	20250523
+A	Planning	Planning	Digging
+B	Planning	Digging	Digging
+C	Digging	Digging	RFS
+
+Let’s tally up:
+
+Step	Total Appearances
+Planning	3
+Digging	4
+RFS	1
+
+Number of days = 3
+
+Avg orders per day
+Planning: 3/3=1
+Digging: 4/3=1.33
+RFS: 1/3=0.33
+
+This metric helps you answer:
+"Which step has the most sustained volume?"
+"Where are orders lingering long enough to clog the system?"
+
+
+
+Concrete example
+Let’s say:
+
+Your file covers 3 days (20250521 to 20250523)
+
+Here’s what the order timeline looks like:
+
+Order	20250521	20250522	20250523
+A	Planning	Planning	Digging
+B	Planning	Digging	Digging
+C	Digging	Digging	RFS
+
+Let’s look at how many orders were in Digging per day:
+
+Date	Orders in Digging
+20250521	1 (Order C)
+20250522	2 (Orders B, C)
+20250523	2 (Orders A, B)
+
+Add them up:
+1 + 2 + 2 = 5 total Digging entries across 3 days
+~1.67 orders in progress on any given day across the 3-day period.
+
+Meaning, in average 1.67 orders being processed each day - indicates traffic
+
+
+
+
+
+
+
+
+Metric	Description	Calculated From	Notes
+1. Avg Days in Step	Average number of calendar days an order stays in this step	Individual order’s timeline across date columns	✅ Calculated per order → then averaged
+2. # Orders (Unique)	Total unique orders that ever entered this step (at any time)	Presence of step in any date column for a row	✅ Cumulative; no time dimension
+3. Avg Orders in Step per Day	Daily average number of orders in this step (across all days)	Sum of daily step occupancy / number of days	Reflects congestion over time
+4. Total MRC (Unique Orders)	Total MRC for all unique orders that ever entered the step	Merge MRC column with step entry presence	Captures revenue weight of the step
+5. Avg MRC in Step per Day	Average daily MRC of all orders in the step	Daily MRC sum / number of days	MRC-adjusted congestion
+6. Avg Orders Entered per Day	Average number of orders entering this step per day	From step transition logic (yesterday ≠ today = step)	Shows inflow speed
+7. Avg Orders Exited per Day	Average number of orders exiting this step per day	From step transition logic (today ≠ yesterday = step)	Shows outflow speed
+8. % Still in Step (last 7 days)	% of all unique orders that entered this step who were still there in the last 7 days	Final 7 date columns vs historical presence	Captures current backlog or stuck risk

@@ -17,11 +17,10 @@ def main():
     add_initial_new_orders()
 
     print("4. add new orders from future snapshots")
+    #update_solution_from_snapshots()
 
     #print("Consolidate heatmaps")
     #consolidate_performance_sheets()
-
-
 
 
 if __name__ == "__main__":
