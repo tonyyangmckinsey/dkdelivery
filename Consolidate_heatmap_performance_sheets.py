@@ -26,7 +26,7 @@ def consolidate_performance_sheets():
 
         print(f"🔍 Processing snapshot: {snapshot_filename}")
         if not os.path.exists(snapshot_path):
-            print(f"⚠️ Snapshot not found: {snapshot_filename} — skipping")
+            print(f"⚠️ Snapshot not found: {snapshot_filename}")
             current_date += timedelta(days=1)
             continue
 
@@ -53,4 +53,3 @@ def consolidate_performance_sheets():
     print(f"   - {individual_output_path}")
 
 
-consolidate_performance_sheets()

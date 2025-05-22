@@ -30,6 +30,7 @@ def update_solution_from_snapshots():
         and f[:8] > latest_date_str
     ])
     
+
     if not snapshot_files:
         print("✅ No new snapshot files to process.")
         return
