@@ -26,7 +26,6 @@ def calculate_avg_mrc_per_day(df, date_columns, steps):
 
     num_days = len(date_columns)
     data = []
-    print(step_daily_mrc)
     for step in steps:
         total_mrc = step_daily_mrc[step]
         avg_mrc = total_mrc / num_days if num_days > 0 else 0
