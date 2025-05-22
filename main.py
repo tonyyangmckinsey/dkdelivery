@@ -14,7 +14,7 @@ def main():
     #compute_initial_solution()
 
     print("3. Add new orders from initial snapshot (No more use after Wednesday)")
-    add_initial_new_orders()
+    #add_initial_new_orders()
 
     print("4. add new orders from future snapshots")
     #update_solution_from_snapshots()
