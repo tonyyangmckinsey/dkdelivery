@@ -213,7 +213,35 @@ This metric answers:
 
 Where is the monetary value piling up over time?
 
+Example Input
+Let’s assume this structure for 3 days:
 
+Order	Delta MRC	20250521	20250522	20250523
+A	100	Planning	Planning	Digging
+B	300	Planning	Digging	Digging
+C	600	Digging	Digging	RFS
+
+Day-by-Day Tally of MRC per Step
+🧾 20250521:
+Planning: A (100) + B (300) = 400
+
+Digging: C (600)
+
+🧾 20250522:
+Planning: A (100)
+
+Digging: B (300) + C (600) = 900
+
+🧾 20250523:
+Digging: A (100) + B (300) = 400
+
+RFS: C (600)
+
+Total MRC Across 3 Days
+Step	Total MRC	Days	Avg MRC per Day
+Planning	500	3	500 / 3 = 166.67
+Digging	1900	3	1900 / 3 ≈ 633.33
+RFS	600	3	600 / 3 = 200.00
 
 
 4. Orders in and out
