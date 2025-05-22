@@ -11,6 +11,7 @@ def calculate_orders_in_out(df, date_columns, steps, T1, T2):
     Returns a DataFrame with columns: ['Step', 'Entered', 'Stayed', 'Exited']
     """
     # Validate that T1 and T2 are within the date columns
+    print(date_columns)
     if T1 not in date_columns or T2 not in date_columns:
         raise ValueError(f"T1 ({T1}) and/or T2 ({T2}) not found in date columns.")
 

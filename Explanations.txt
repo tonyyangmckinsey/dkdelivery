@@ -145,3 +145,39 @@ RFS	600 / 3 = 200.00
 This metric answers:
 
 Where is the monetary value piling up over time?
+
+
+
+
+4. Orders in and out
+
+For each step and for a time window from T1 to T2, count:
+
+How many unique orders entered that step
+
+How many stayed in that step the entire time
+
+How many exited the step
+
+
+📋 Input Data (Step History per Order)
+Order	20250521	20250522	20250523
+A	Planning	Planning	Digging
+B	Planning	Digging	Digging
+C	Digging	Digging	RFS
+D	Digging	Digging	Digging
+E	Planning	Digging	RFS
+
+🔍 Step-by-Step Classification for Step = Digging
+Order	Step Sequence	At T1	At T2	In Step at Any Point?	Entered	Stayed	Exited
+A	[Planning, Planning, Digging]	Planning	Digging	✅	✅	❌	❌
+B	[Planning, Digging, Digging]	Planning	Digging	✅	✅	❌	❌
+C	[Digging, Digging, RFS]	Digging	RFS	✅	❌	❌	✅
+D	[Digging, Digging, Digging]	Digging	Digging	✅	❌	✅	❌
+E	[Planning, Digging, RFS]	Planning	RFS	✅	✅	❌	✅
+
+✅ Final Tally for Step = Digging
+Metric	Orders	Count
+Entered	A, B, E	3
+Stayed	D	1
+Exited	C, E	2
