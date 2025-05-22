@@ -5,6 +5,8 @@ Flow analysis
 
 1. metric_avg_days_in_step
 
+For each step, calculate how many days (on average) an order stays in that step before transitioning to another step.
+
 It's calculating, per delivery step, the average number of consecutive days an order spends in that step before transitioning to a new one.
 It loops through each row (i.e., each order), looks across all the daily columns, and counts how long an order stays in the same step, like this:
 
@@ -36,11 +38,44 @@ Order 3: 1 day
 → Total: 6 days, 3 entries → Average: 2.0 for Planning
 
 
+Example Input (Snapshot of Steps Over 5 Days)
+Let’s say we track 3 orders from 20250520 to 20250524:
+
+Order	20250520	20250521	20250522	20250523	20250524
+A	Planning	Planning	Digging	Digging	RFS
+B	Planning	Digging	Digging	Digging	RFS
+C	Planning	Planning	Planning	Planning	Planning
+Step-by-Step for Each Order
+🧾 Order A:
+Planning: 2 days
+
+Digging: 2 days
+
+RFS: 1 day
+
+🧾 Order B:
+Planning: 1 day
+
+Digging: 3 days
+
+RFS: 1 day
+
+🧾 Order C:
+Planning: 5 days
+
+Aggregated Counts
+Step	Total Days	Unique Orders	Avg Days
+Planning	8 days	3 orders	8 / 3 ≈ 2.67
+Digging	5 days	2 orders	5 / 2 = 2.50
+RFS	2 days	2 orders	2 / 2 = 1.00
+
+
+
 
 2. metric_avg_orders_per_day per step
 For each delivery step, on average, how many orders are in that step per day over the period 
 
-uppose you have:
+Suppose you have:
 
 Order	20250521	20250522	20250523
 A	Planning	Planning	Digging
@@ -64,7 +99,6 @@ RFS: 1/3=0.33
 This metric helps you answer:
 "Which step has the most sustained volume?"
 "Where are orders lingering long enough to clog the system?"
-
 
 
 Concrete example
@@ -91,6 +125,39 @@ Add them up:
 ~1.67 orders in progress on any given day across the 3-day period.
 
 Meaning, in average 1.67 orders being processed each day - indicates traffic
+
+
+
+Example Input (3 Days)
+Order	20250521	20250522	20250523
+A	Planning	Planning	Digging
+B	Planning	Digging	Digging
+C	Digging	Digging	RFS
+
+ Step-by-Step Tally of Step Appearances
+We count how many orders were in each step on each day:
+
+20250521:
+Planning: A, B → 2
+
+Digging: C → 1
+
+20250522:
+Planning: A → 1
+
+Digging: B, C → 2
+
+20250523:
+Digging: A, B → 2
+
+RFS: C → 1
+
+ Total Step Appearances Over 3 Days
+Step	Total Occurrences	Number of Days	Avg Orders per Day
+Planning	3	3	3 / 3 = 1.00
+Digging	5	3	5 / 3 ≈ 1.67
+RFS	1	3	1 / 3 ≈ 0.33
+
 
 3. Averge mrc per day per step
 
@@ -152,15 +219,12 @@ Where is the monetary value piling up over time?
 4. Orders in and out
 
 For each step and for a time window from T1 to T2, count:
-
 How many unique orders entered that step
-
 How many stayed in that step the entire time
-
 How many exited the step
 
 
-📋 Input Data (Step History per Order)
+Input Data (Step History per Order)
 Order	20250521	20250522	20250523
 A	Planning	Planning	Digging
 B	Planning	Digging	Digging
@@ -168,7 +232,7 @@ C	Digging	Digging	RFS
 D	Digging	Digging	Digging
 E	Planning	Digging	RFS
 
-🔍 Step-by-Step Classification for Step = Digging
+Step-by-Step Classification for Step = Digging
 Order	Step Sequence	At T1	At T2	In Step at Any Point?	Entered	Stayed	Exited
 A	[Planning, Planning, Digging]	Planning	Digging	✅	✅	❌	❌
 B	[Planning, Digging, Digging]	Planning	Digging	✅	✅	❌	❌
@@ -176,7 +240,7 @@ C	[Digging, Digging, RFS]	Digging	RFS	✅	❌	❌	✅
 D	[Digging, Digging, Digging]	Digging	Digging	✅	❌	✅	❌
 E	[Planning, Digging, RFS]	Planning	RFS	✅	✅	❌	✅
 
-✅ Final Tally for Step = Digging
+Final Tally for Step = Digging
 Metric	Orders	Count
 Entered	A, B, E	3
 Stayed	D	1
