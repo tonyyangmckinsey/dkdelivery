@@ -11,6 +11,7 @@ from metric_orders_in_out import calculate_orders_in_out
 from individual_avg_orders_per_day import calculate_avg_orders_per_day_per_dpm
 from individual_avg_mrc_per_day import calculate_avg_mrc_per_day_per_dpm
 from individual_avg_days_in_step import calculate_avg_days_in_step_per_dpm
+from individual_orders_in_out import calculate_orders_in_out_per_dpm
 
 def normalize_keys(df):
     df["ServiceID_Crid"] = df["ServiceID_Crid"].astype(str).str.strip()
@@ -23,6 +24,7 @@ def extract_date_columns(df):
 
 
 def analyze_order_development(file_path):
+
     print("HEII")
     df = pd.read_excel(file_path, engine="openpyxl")
     df = normalize_keys(df)
@@ -44,6 +46,17 @@ def analyze_order_development(file_path):
         "Cancelled/terminated/On hold"
     ]
 
+    tracked_steps = [
+        "1.9 PMO delivery planning",
+        "2. Delivery planning",
+        "3. Installation preparation and digging order",
+        "4. Final design",
+        "5. Configuration",
+        "6. Cabling splicing and installation",
+        "7. Service activation",
+        "8. Ready for service"
+    ]
+
     avg_days_df = calculate_avg_days_in_step(df, date_columns, steps)
     avg_orders_per_day_df = calculate_avg_orders_per_day(df, date_columns, steps)
     avg_mrc_per_day_df = calculate_avg_mrc_per_day(df, date_columns, steps)
@@ -53,7 +66,6 @@ def analyze_order_development(file_path):
     T2 = "20250522"
     in_out_df = calculate_orders_in_out(df, date_columns, steps, T1, T2)
 
-    # Individual-level metrics
     avg_orders_per_dpm_df = calculate_avg_orders_per_day_per_dpm(df, date_columns, steps)
     avg_mrc_per_dpm_df = calculate_avg_mrc_per_day_per_dpm(df, date_columns, steps)
     avg_days_per_dpm_df = calculate_avg_days_in_step_per_dpm(df, date_columns, steps)
@@ -69,6 +81,12 @@ def analyze_order_development(file_path):
         avg_orders_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg Orders per Day")
         avg_mrc_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg MRC per Day")
         avg_days_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg Days in Step")
+
+        for step in tracked_steps:
+            per_step_df = calculate_orders_in_out_per_dpm(df, date_columns, step, T1, T2)
+            safe_sheet_name = step[:31]  # Excel max sheet name length is 31
+            writer.book.create_sheet(safe_sheet_name)
+            per_step_df.to_excel(writer, index=False, sheet_name=safe_sheet_name)
 
     wb = load_workbook(output_path)
     sheet1 = wb["Step Metrics Summary"]
