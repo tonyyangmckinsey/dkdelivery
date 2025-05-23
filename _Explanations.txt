@@ -1,8 +1,6 @@
 To-do: Link delivered MRC with the Order Development Output sheet
 Flow analysis
 
-
-
 1. metric_avg_days_in_step
 
 For each step, calculate how many days (on average) an order stays in that step before transitioning to another step.

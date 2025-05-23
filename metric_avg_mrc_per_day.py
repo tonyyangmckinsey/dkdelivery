@@ -7,22 +7,21 @@ def calculate_avg_mrc_per_day(df, date_columns, steps):
     Returns a DataFrame with columns: ['Step', 'Avg MRC per Day']
     """
     df.columns = df.columns.str.strip()  # Strip columns once
-
     step_daily_mrc = defaultdict(float)
 
     for col in date_columns:
         for _, row in df.iterrows():
             step = row[col]
             if step in steps:
-                mrc_raw = row.get("Delta MRC", 0)
-                if pd.notna(mrc_raw):
+                value = row.get("Delta MRC", 0)
+                if pd.isna(value) or str(value).strip() == "":
+                    mrc = 0
+                else:
                     try:
-                        mrc = float(str(mrc_raw).strip())
+                        mrc = float(str(value).strip())
                     except:
                         mrc = 0
-                    step_daily_mrc[step] += mrc
-                # else:  # Optional debug
-                #     print(f"⚠️ Skipping NaN MRC for step: {step}")
+                step_daily_mrc[step] += mrc
 
     num_days = len(date_columns)
     data = []

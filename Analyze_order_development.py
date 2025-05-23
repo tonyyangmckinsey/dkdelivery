@@ -5,12 +5,12 @@ import re
 import time
 from openpyxl import load_workbook
 from metric_avg_days_in_step import calculate_avg_days_in_step
-from metric_orders_unique import calculate_unique_orders
 from metric_avg_orders_per_day import calculate_avg_orders_per_day
-from metric_total_mrc import calculate_total_mrc
 from metric_avg_mrc_per_day import calculate_avg_mrc_per_day
 from metric_orders_in_out import calculate_orders_in_out
-
+from individual_avg_orders_per_day import calculate_avg_orders_per_day_per_dpm
+from individual_avg_mrc_per_day import calculate_avg_mrc_per_day_per_dpm
+from individual_avg_days_in_step import calculate_avg_days_in_step_per_dpm
 
 def normalize_keys(df):
     df["ServiceID_Crid"] = df["ServiceID_Crid"].astype(str).str.strip()
@@ -47,12 +47,16 @@ def analyze_order_development(file_path):
     avg_days_df = calculate_avg_days_in_step(df, date_columns, steps)
     avg_orders_per_day_df = calculate_avg_orders_per_day(df, date_columns, steps)
     avg_mrc_per_day_df = calculate_avg_mrc_per_day(df, date_columns, steps)
-
     summary_df = avg_days_df.merge(avg_orders_per_day_df, on="Step").merge(avg_mrc_per_day_df, on="Step")
 
     T1 = "20250519"
     T2 = "20250522"
     in_out_df = calculate_orders_in_out(df, date_columns, steps, T1, T2)
+
+    # Individual-level metrics
+    avg_orders_per_dpm_df = calculate_avg_orders_per_day_per_dpm(df, date_columns, steps)
+    avg_mrc_per_dpm_df = calculate_avg_mrc_per_day_per_dpm(df, date_columns, steps)
+    avg_days_per_dpm_df = calculate_avg_days_in_step_per_dpm(df, date_columns, steps)
 
     output_path = os.path.join(
         r"C:\Users\Tony Yang\OneDrive - McKinsey & Company\Documents\Python\FinalOutputFolder",
@@ -62,16 +66,25 @@ def analyze_order_development(file_path):
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
         summary_df.to_excel(writer, index=False, sheet_name="Step Metrics Summary")
         in_out_df.to_excel(writer, index=False, sheet_name="Step Entry-Exit Summary")
+        avg_orders_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg Orders per Day")
+        avg_mrc_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg MRC per Day")
+        avg_days_per_dpm_df.to_excel(writer, index=False, sheet_name="DPM Avg Days in Step")
 
     wb = load_workbook(output_path)
     sheet1 = wb["Step Metrics Summary"]
     sheet2 = wb["Step Entry-Exit Summary"]
+    sheet3 = wb["DPM Avg Orders per Day"]
+    sheet4 = wb["DPM Avg MRC per Day"]
+    sheet5 = wb["DPM Avg Days in Step"]
 
     start_date = "20250519"
     today_date = date_columns[-1]
 
     sheet1["A15"] = f"Data as of {start_date} - {today_date}"
     sheet2["A15"] = f"Interval between T1 and T2: {T1} - {T2}"
+    sheet3["A28"] = f"Data as of {start_date} - {today_date}"
+    sheet4["A28"] = f"Data as of {start_date} - {today_date}"
+    sheet5["A28"] = f"Data as of {start_date} - {today_date}"
 
     wb.save(output_path)
     print(f"✅ Summary exported to: {output_path}")
