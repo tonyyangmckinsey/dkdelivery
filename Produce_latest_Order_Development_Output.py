@@ -67,6 +67,7 @@ def update_solution_from_snapshots():
             "Delivery Project Manager",
             "Segment Red.",
             "ProjectTypeValue",
+            "Committed RFS",
             "Input: Which delivery step is the order in? (Drop down list)"
         ]
 
@@ -103,6 +104,21 @@ def update_solution_from_snapshots():
                 master_df.at[idx, snapshot_date] = snapshot_lookup[key]
                 filled += 1
         print(f"✅ Updated {filled} rows for {snapshot_date}")
+
+
+        # === Update Committed RFS from latest snapshot ===
+    print("📅 Updating Committed RFS values from snapshot...")
+    rfs_lookup = snapshot_df.set_index(["ServiceID_Crid", "SalesProjectID_ContractNumber"])["Committed RFS"].to_dict()
+
+    updated_rfs = 0
+    for idx, row in master_df.iterrows():
+        key = (row["ServiceID_Crid"], row["SalesProjectID_ContractNumber"])
+        new_rfs = rfs_lookup.get(key)
+        if pd.notna(new_rfs):
+            master_df.at[idx, "Committed RFS"] = new_rfs
+            updated_rfs += 1
+
+    print(f"✅ Updated Committed RFS for {updated_rfs} orders.")
 
     # === Export final updated solution ===
     latest_snapshot_date = snapshot_files[-1][:8]
