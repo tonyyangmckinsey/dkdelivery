@@ -108,9 +108,6 @@ def mergeaxbowithbacklog():
         how="left"
     )
 
-    print ("satan")
-    print("satan")
-
 
     print("✅ Rows in final after merging with df:", len(final))
 

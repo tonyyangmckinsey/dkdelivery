@@ -62,8 +62,8 @@ def analyze_order_development(file_path):
     avg_mrc_per_day_df = calculate_avg_mrc_per_day(df, date_columns, steps)
     summary_df = avg_days_df.merge(avg_orders_per_day_df, on="Step").merge(avg_mrc_per_day_df, on="Step")
 
-    T1 = "20250519"
-    T2 = "20250522"
+    T1 = input("Enter T1 date for order in & out analysis (format: YYYYMMDD) (Earliest 20250519): ")
+    T2 = input("Enter T2 date for order in & out analysis (format: YYYYMMDD): ")
     in_out_df = calculate_orders_in_out(df, date_columns, steps, T1, T2)
 
     avg_orders_per_dpm_df = calculate_avg_orders_per_day_per_dpm(df, date_columns, steps)
